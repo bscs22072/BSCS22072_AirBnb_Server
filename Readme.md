@@ -1,56 +1,162 @@
-# Airbnb Clone
+# 🚀 YaarScript: Industrial-Grade Middle-End Compiler
 
-This project is a basic Airbnb clone's backend, featuring user authentication, booking management, and host panel for managing listings and bookings. Built with React.js, MongoDB, and Node.js, this project demonstrates core functionality needed for an online property rental platform.
+[![YaarScript Playground](https://img.shields.io/badge/Playground-Live-blueviolet?style=for-the-badge&logo=rocket)](https://yaarscript.netlify.app/)
 
-## Features
+**YaarScript** is a high-performance, multi-phase compiler implemented in Rust, targeting a localized Urdu-slang syntax for systems-level logic. Unlike basic interpreters, YaarScript employs an industrial middle-end pipeline, featuring a **Fixed-Point Convergence Optimizer** and a rigorous **Static Type-Checking** engine.
 
-### User Authentication
-- **Signup Page**: A registration api for new users.
-- **Login Page**: A login api for existing users.
+---
 
-### Admin Panel
-- **Listings Management**: Admin api enabling him to view, add, and remove property listings.
-- **Bookings Management**: Admin api enabling him to view all bookings, including user and property details.
+## 🏗️ Architectural Pipeline
 
-### Protected Routes
-- **User Profile**: User api enabling him to view his information and .
-- **Admin Panel**: Accessible api's only to Host users.
-- **Booking history**: Guests api's enabling them to can view there booking history.
-- **Redirection for Unauthenticated Users**: Users attempting to access protected routes are redirected to the login page.
+YaarScript adheres to the classic compiler front-end and middle-end separation. The pipeline ensures that the high-level Urdu abstractions are lowered into an optimized linear Intermediate Representation (IR) before execution.
 
-### Booking System
-- **Booking Page**: Users api enabling them to submit bookings, which are saved to the backend.
-- **Reserved Bookings for Guests Page**: Displaying reserved bookings api for each user.
-- **Reserved Bookings for Host Page**: Displaying api for reserved bookings on Hosts Listings.
+```mermaid
+graph LR
+    subgraph Front-End
+    A[.yaar Source] --> B[Lexical Analysis]
+    B --> C[Hybrid Pratt/RD Parser]
+    C --> D[AST Generation]
+    D --> E[Semantic Analysis]
+    E --> F[Scope & Type Verification]
+    end
 
-### Mini Admin Panel
-- **Listings Management**: Api for Host to add new listings with property details and images, and list view for displaying and deleting existing listings.
-- **Bookings Management**: Admin's api to overview of all bookings with details for each booking, including user and property information.
+    subgraph "Middle-End (Optimizer)"
+    G[TAC Generation] --> H{Fixed-Point Loop}
+    H --> I[Constant Folding]
+    H --> J[Copy Propagation]
+    H --> K[Dead Code Elimination]
+    K -->|Δ > 0| H
+    K -->|Δ = 0| L[Final IR Output]
+    end
 
-### Backend Security
-- **Role-Based Access Control**: Routes are protected based on user roles (e.g., admin).
-- **JWT Middleware**: Secures routes that require authentication.
-- **Password Hashing**: Passwords are hashed using bcrypt before being saved to the database.
- 
-## Tech Stack 
-- **Backend**: Node.js, Express, MongoDB.
-- **Authentication**: JWT (JSON Web Tokens) 
+    subgraph Back-End
+    L --> M[Interpretation Engine]
+    M --> N[Intrinsics Library]
+    N --> O[Stdout/Wasm Output]
+    end
+```
 
-## Installation Guide:
+---
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/bazil-1854/BSCS22072_AirBnb_Server.git
-   cd <where-you-cloned>
-   ```
+## 🔬 The Middle-End: Fixed-Point Convergence
 
-   
-2. Install dependancies:
-   ```bash
-   npm install
-   ```
+The core of YaarScript's efficiency lies in its `IROptimizer`. The optimization engine utilizes a **Convergence Model**, repeatedly applying multiple analysis passes until the Intermediate Representation reaches a stable state (where the difference between passes $\Delta = 0$).
 
-3. Start the server:
-   ```bash
-   npm run dev
-   ```
+### Optimization Pass Specifications
+
+1.  **Multi-Type Constant Folding**: Resolves arithmetic and logical expressions at compile-time. Supports folding of `number`, `float`, and `faisla` types, including complex power operations.
+2.  **Global/Local Propagation**: Propagates constant literals across basic blocks.
+3.  **Algebraic Simplification**: Implements mathematical identities to prune redundant operations:
+    *   $x + 0 \equiv x$
+    *   $x \times 1 \equiv x$
+    *   $x \times 0 \equiv 0$
+    *   $x - x \equiv 0$
+4.  **Dead Code Elimination (DCE)**: Prunes assignments and computations whose values are not consumed by any side-effecting operation (like `bolo`).
+
+### Implementation: The Convergence Loop
+```rust
+pub fn run(&mut self) {
+    let mut modified = true;
+    let mut iterations = 0;
+    const MAX_ITERATIONS: usize = 10;
+
+    // Fixed-point iteration: run until the IR is stable (Δ = 0)
+    while modified && iterations < MAX_ITERATIONS {
+        modified = false;
+        iterations += 1;
+
+        modified |= self.constant_folding();
+        modified |= self.constant_propagation();
+        modified |= self.copy_propagation();
+        modified |= self.peephole_optimization();
+        modified |= self.dead_code_elimination_pass();
+    }
+}
+```
+
+---
+
+## ⚡ The Power Operator (`**`)
+
+YaarScript implements a first-class **Power Operator** (`**`), integrated directly at the Lexer level as a `TokenType::Power`. It occupies **Precedence Level 9**, sitting strictly above standard binary multiplicative operators to handle right-associative mathematical expectations.
+
+| Level | Description | Operators |
+| :--- | :--- | :--- |
+| **8** | Multiplicative | `*`, `/`, `%` |
+| **9** | **Exponentiation** | **`**`** |
+| **10** | Unary | `-`, `!`, `++`, `--` |
+
+### Backend Logic
+*   **Integers**: Leverages `i64::pow(u32)` with compile-time overflow checks.
+*   **Floats**: Leverages `f64::powf(f64)` for handling fractional exponents.
+
+---
+
+## 🌍 Urdu-Native Semantic Mapping
+
+YaarScript provides a semantic mapping layer that translates localized Urdu slang into robust systems logic. This allows developers to write low-level code using expressive, native terminology without sacrificing type safety.
+
+| YaarScript Keyword | C-Equivalent | Purpose |
+| :--- | :--- | :--- |
+| `number` | `int64_t` | Signed 64-bit integer |
+| `faisla` | `bool` | Boolean type |
+| `sahi` | `true` | Boolean literal true |
+| `galat` | `false` | Boolean literal false |
+| `agar` | `if` | Conditional branch |
+| `warna` | `else` | Alternative branch |
+| `jabtak` | `while` | Loop continuation |
+| `bas_kar` | `break` | Scope exit |
+| `ittifaq` | `rand()` | Entropy source |
+
+---
+
+## 🛡️ Intrinsic Safeguarding
+
+To prevent the optimizer from incorrectly pruning vital system calls, every intrinsic function has a dedicated instruction in the Three-Address Code (TAC) pipeline.
+
+*   **`READ` (suno)**: Pauses execution for standard input.
+*   **`TIME` (waqt)**: Retrieves high-resolution system timestamps.
+*   **`RANDOM` (ittifaq)**: Interacts with the Rust `rand` crate to fetch entropy.
+
+> [!IMPORTANT]
+> These intrinsics are marked as **Side-Effect Producing** (volatile) in the DCE pass to ensure they are never optimized away, even if their return values appear unused in the immediate local scope.
+
+---
+
+## 💻 Code Evidence
+
+### YaarScript: Exponentiation & Entropy
+```rust
+yaar {
+    number base = 2;
+    number exp = 10;
+    
+    // Power Operator (Precedence 9)
+    number result = base ** exp; // Eval: 1024
+    
+    // System Intrinsic: Random range [1, 100]
+    number roll = ittifaq(1, 100);
+    
+    agar (roll > 50) {
+        bolo("High Roll: ", roll);
+    } warna {
+        bolo("Low Roll: ", roll);
+    }
+}
+```
+
+---
+
+## ⚙️ Technical Specifications
+
+*   **Compiler Backend**: Rust 2024 Stable.
+*   **Intermediate Representation**: Linear Three-Address Code (TAC) with symbolic labels.
+*   **Memory Management**: Automatic stack-based variable allocation within the execution engine.
+*   **Dependencies**: 
+    *   `rand`: Cryptographically secure pseudorandom number generation.
+    *   `colored`: Terminal-based AST and IR visualization.
+
+---
+
+> [!TIP]
+> Use the `--release` flag when compiling the compiler itself to maximize the speed of the Optimizer's Fixed-Point loop.
